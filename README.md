@@ -4,6 +4,8 @@ Upload a resume (PDF), paste a job description, and get a match score, missing s
 
 **Stack:** React + Vite + Tailwind CSS, FastAPI, SQLAlchemy (SQLite or PostgreSQL), pypdf, scikit-learn (TF-IDF cosine similarity), Google Gemini API.
 
+## Live Link : https://frontend-xi-seven-18.vercel.app/analysis/1
+
 ## How scoring works
 - Skills are extracted from the resume and job text using a dictionary of ~170 skills and aliases (`backend/skills.py`).
 - Final score = 60% skill coverage + 40% TF-IDF cosine similarity.
