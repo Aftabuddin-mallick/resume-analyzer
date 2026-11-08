@@ -1,5 +1,8 @@
-const BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(/\/+$/, "");
-
+   const BASE = (
+     import.meta.env.VITE_API_URL ||
+     (import.meta.env.PROD ? "https://backend-tawny-mu-82.vercel.app" : "http://localhost:8000")
+   ).replace(/\/+$/, "");
+   
 async function request(path, options = {}) {
   let res;
   try {
