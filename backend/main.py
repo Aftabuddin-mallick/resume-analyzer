@@ -1,6 +1,5 @@
 import json
 import os
-from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
@@ -20,20 +19,27 @@ from seed import SEED_JOBS  # noqa: E402
 MAX_PDF_BYTES = 5 * 1024 * 1024
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+def init_db():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         if db.query(models.Job).count() == 0:
             db.add_all([models.Job(**j) for j in SEED_JOBS])
             db.commit()
+    except Exception as exc:
+        db.rollback()
+        print(f"[init_db] seed skipped: {exc}")
     finally:
         db.close()
-    yield
 
 
-app = FastAPI(title="AI Resume Analyzer", version="1.0.0", lifespan=lifespan)
+try:
+    init_db()
+except Exception as exc:  # never crash on import; endpoints will report DB errors
+    print(f"[init_db] failed: {exc}")
+
+
+app = FastAPI(title="AI Resume Analyzer", version="1.0.0")
 
 origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",") if o.strip()]
 app.add_middleware(
